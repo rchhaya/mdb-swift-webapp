@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Kittens</title>
+  <title>Gym Records</title>
   <style type="text/css">
     table, th, td {
       border: 1px solid black;
@@ -19,12 +19,13 @@
 </head>
 <body>
   
-  <h1>Kittens 🐱🐱</h1>
+  <h1>Gym Records 🏋️‍♂️</h1>
 <table>
 <tr>
     <th>Name</th>
     <th>Bench</th>
-    <th>Favorite Food</th>
+    <th>Squat</th>
+    <th>Overhead Press</th>
     <th>Last Updated</th>
 </tr>
 #for(kitten in kittens):
@@ -32,13 +33,14 @@
      <td><a href="/kittens/#(kitten.name)">#(kitten.name)</a></td>
      <td>#(kitten.bench)</td>
      <td>#(kitten.squat)</td>
+     <td>#(kitten.ohp)</td>
      <td>#date(kitten.lastUpdateTime, "MM-dd-y HH:mm")</td>
  </tr>
 #endfor   
 </table>
 <br>
 <br>
-<h2>Add a new kitten</h2>
+<h2>Add a new gym record!</h2>
 <form onsubmit="return false;">
     <div>
     <label for="name">Name</label>
@@ -52,6 +54,11 @@
     <input name="squat" id="squat">
   </div>
   <div>
+    <label for="ohp">Overhead Press</label>
+    <input name="ohp" id="ohp">
+  </div>
+
+  <div>
     <button id="add-btn">Add</button>
   </div>
 </form>
@@ -60,8 +67,9 @@
   $(document).ready(() => {
     $("\#add-btn").click(() => {
       var name = $("\#name").val();
-      var bench = $("\#bench").val();
-      var squat = $("\#squat").val();
+      var bench = parseInt($("\#bench").val());
+      var squat = parseInt($("\#squat").val());
+      var ohp = parseInt($("\#ohp").val());
       var updateTime = new Date();
       // Serialize request data to extended JSON. We use extended JSON
       // both here, and for serializing/deserializing request data on
@@ -72,6 +80,7 @@
         'name': name,
         'bench': bench,
         'squat': squat,
+        'ohp': ohp,
         'lastUpdateTime': updateTime
       })
 

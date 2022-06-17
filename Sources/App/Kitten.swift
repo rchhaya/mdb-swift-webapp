@@ -23,13 +23,14 @@ struct KittenUpdate: Codable {
 /// Represents a kitten.
 struct Kitten: Content {
     /// Unique identifier.
-    var _id: BSONObjectID?
+    let _id: BSONObjectID?
     /// Name.
     let name: String
-    /// Fur color.
-    let color: String
-    /// Favorite food.
-    let favoriteFood: CatFood
     /// Last updated time.
     let lastUpdateTime: Date
+    ///
+    let bench: Int?
+    let squat: Int?
+    let ohp: Int?
+    let benchTraining: Int?
 }
