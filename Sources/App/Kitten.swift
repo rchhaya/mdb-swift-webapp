@@ -33,4 +33,6 @@ struct Kitten: Content {
     let squat: Int?
     let ohp: Int?
     let benchTraining: Int?
+    let squatTraining: Int?
+    let ohpTraining: Int?
 }

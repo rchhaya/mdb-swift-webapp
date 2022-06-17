@@ -40,7 +40,7 @@
 </table>
 <br>
 <br>
-<h2>Add a new gym record!</h2>
+<h2>Add a new gym record! (Theoretical 1RMs) </h2>
 <form onsubmit="return false;">
     <div>
     <label for="name">Name</label>
