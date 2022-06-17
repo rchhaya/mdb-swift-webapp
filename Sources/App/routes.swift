@@ -50,7 +50,7 @@ func restAPIRoutes(_ app: Application) throws {
 extension Request {
     /// Convenience extension for obtaining a collection.
     var kittenCollection: MongoCollection<Kitten> {
-        self.application.mongoDB.client.db("personal").collection("kittens", withType: Kitten.self)
+        self.application.mongoDB.client.db("personal").collection("kittenstwo", withType: Kitten.self)
     }
 
     /// Constructs a document using the name from this request which can be used a filter for MongoDB
@@ -88,7 +88,7 @@ extension Request {
         } catch {
             // Give a more helpful error message in case of a duplicate key error.
             if let err = error as? MongoError.WriteError, err.writeFailure?.code == 11000 {
-                throw Abort(.conflict, reason: "A kitten with the name \(newKitten.name) already exists!")
+                throw Abort(.conflict, reason: "A kitten with the name \(String(describing: newKitten.name)) already exists!")
             }
             throw Abort(.internalServerError, reason: "Failed to save new kitten: \(error)")
         }
@@ -113,7 +113,7 @@ extension Request {
     func updateKitten() async throws -> Response {
         let nameFilter = try self.getNameFilter()
         // Parse the update data from the request.
-        let update = try self.content.decode(KittenUpdate.self)
+        let update = try self.content.decode(Kitten.self)
         /// Create a document using MongoDB update syntax that specifies we want to set a field.
         let updateDocument: BSONDocument = ["$set": .document(try BSONEncoder().encode(update))]
 

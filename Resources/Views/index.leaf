@@ -19,37 +19,53 @@
 </head>
 <body>
   
-  <h1>Kittens 🐱🐱</h1>
+  <h1>Gym Records 🏋️‍♂️ 🏋️‍♂️ </h1>
 <table>
 <tr>
+    <th>Last Updated</th>
     <th>Name</th>
     <th>Bench</th>
-    <th>Favorite Food</th>
-    <th>Last Updated</th>
+    <th>Squat</th>
+    <th>Overhead Press</th>
 </tr>
 #for(kitten in kittens):
  <tr>
-     <td><a href="/kittens/#(kitten.name)">#(kitten.name)</a></td>
+     <td><a href="/kittens/#(kitten.lastUpdateTime)">#date(kitten.lastUpdateTime, "MM-dd-y HH:mm")</a></td>
+     <td>#(kitten.name)</td>
      <td>#(kitten.bench)</td>
      <td>#(kitten.squat)</td>
-     <td>#date(kitten.lastUpdateTime, "MM-dd-y HH:mm")</td>
+     <td>#(kitten.ohp)</td>
  </tr>
 #endfor   
 </table>
 <br>
 <br>
-<h2>Add a new kitten</h2>
+<h2>Add a new gym record</h2>
 <form onsubmit="return false;">
-    <div>
+<div>
     <label for="name">Name</label>
     <input name="name" id="name">
-  </div>
+  <div>
   <div>
     <label for="bench">Bench</label>
     <input name="bench" id="bench">
   <div>
     <label for="squat">Squat</label>
     <input name="squat" id="squat">
+  </div>
+  <div>
+    <label for="ohp">Overhead Press</label>
+    <input name="ohp" id="ohp">
+  <div>
+    <label for="benchTraining">Bench Training</label>
+    <input name="benchTraining" id="benchTraining">
+  </div>
+  <div>
+    <label for="squatTraining">Squat Training</label>
+    <input name="squatTraining" id="squatTraining">
+  <div>
+    <label for="ohpTraining">Overhead Press Training</label>
+    <input name="ohpTraining" id="ohpTraining">
   </div>
   <div>
     <button id="add-btn">Add</button>
@@ -59,10 +75,15 @@
 <script type="text/javascript">
   $(document).ready(() => {
     $("\#add-btn").click(() => {
+      console.log("potato")
       var name = $("\#name").val();
-      var bench = $("\#bench").val();
-      var squat = $("\#squat").val();
-      var updateTime = new Date();
+      var bench = parseInt($("\#bench").val(), 10 || 0);
+      var squat = parseInt($("\#squat").val(), 10 || 0);
+      var ohp = parseInt($("\#ohp").val(), 10 || 0);
+      var benchTraining = parseInt($("\#benchTraining").val(), 10 || 0);
+      var squatTraining = parseInt($("\#squatTraining").val(), 10 || 0);
+      var ohpTraining = parseInt($("\#ohpTraining").val(), 10 || 0);
+      var timestamp = new Date();
       // Serialize request data to extended JSON. We use extended JSON
       // both here, and for serializing/deserializing request data on
       // the backend, in order to ensure all MongoDB type information
@@ -72,6 +93,10 @@
         'name': name,
         'bench': bench,
         'squat': squat,
+        'ohp': ohp,
+        'benchTraining': benchTraining,
+        'squatTraining': squatTraining,
+        'ohpTraining': ohpTraining,
         'lastUpdateTime': updateTime
       })
 

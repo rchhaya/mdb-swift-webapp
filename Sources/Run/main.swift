@@ -9,7 +9,8 @@ let app = Application(env)
 try configure(app)
 
 // Configure the app for using a MongoDB server at the provided connection string.
-try app.mongoDB.configure("mongodb+srv://rchhaya:Sparker007!MongoDB@demo-cluster.g44zg.mongodb.net/?retryWrites=true&w=majority")
+try app.mongoDB.configure(
+    "mongodb+srv://rchhaya:Sparker007!MongoDB@demo-cluster.g44zg.mongodb.net/?retryWrites=true&w=majority")
 
 defer {
     // Cleanup the application's MongoDB data.
