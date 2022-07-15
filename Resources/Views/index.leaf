@@ -20,25 +20,6 @@
 <body>
   
   <h1>Gym Records 🏋️‍♂️</h1>
-<table>
-<tr>
-    <th>Name</th>
-    <th>Bench</th>
-    <th>Squat</th>
-    <th>Overhead Press</th>
-    <th>Last Updated</th>
-</tr>
-#for(kitten in kittens):
- <tr>
-     <td><a href="/kittens/#(kitten.name)">#(kitten.name)</a></td>
-     <td>#(kitten.bench)</td>
-     <td>#(kitten.squat)</td>
-     <td>#(kitten.ohp)</td>
-     <td>#date(kitten.lastUpdateTime, "MM-dd-y HH:mm")</td>
- </tr>
-#endfor   
-</table>
-<br>
 <br>
 <h2>Add a new gym record! (Theoretical 1RMs) </h2>
 <form onsubmit="return false;">
@@ -47,29 +28,49 @@
     <input name="name" id="name">
   </div>
   <div>
-    <label for="bench">Bench</label>
-    <input name="bench" id="bench">
+    <label for="lift1">Bench</label>
+    <input name="lift1" id="lift1">
   <div>
-    <label for="squat">Squat</label>
-    <input name="squat" id="squat">
+    <label for="lift2">Squat</label>
+    <input name="lift2" id="lift2">
   </div>
   <div>
-    <label for="ohp">Overhead Press</label>
-    <input name="ohp" id="ohp">
+    <label for="lift3">Overhead Press</label>
+    <input name="lift3" id="lift3">
   </div>
 
   <div>
     <button id="add-btn">Add</button>
   </div>
 </form>
+<br>
+<br>
+<table>
+<tr>
+    <th>Name</th>
+    <th>Bench</th>
+    <th>Squat</th>
+    <th>Overhead Press</th>
+    <th>Last Updated</th>
+</tr>
+#for(record in records):
+ <tr>
+     <td><a href="/records/#(record.name)">#(record.name)</a></td>
+     <td>#(record.lift1)</td>
+     <td>#(record.lift2)</td>
+     <td>#(record.lift3)</td>
+     <td>#date(record.lastUpdateTime, "MM-dd-y HH:mm")</td>
+ </tr>
+#endfor   
+</table>
 
 <script type="text/javascript">
   $(document).ready(() => {
     $("\#add-btn").click(() => {
       var name = $("\#name").val();
-      var bench = parseInt($("\#bench").val());
-      var squat = parseInt($("\#squat").val());
-      var ohp = parseInt($("\#ohp").val());
+      var lift1 = parseInt($("\#lift1").val());
+      var lift2 = parseInt($("\#lift2").val());
+      var lift3 = parseInt($("\#lift3").val());
       var updateTime = new Date();
       // Serialize request data to extended JSON. We use extended JSON
       // both here, and for serializing/deserializing request data on
@@ -78,9 +79,9 @@
       // See: https://docs.mongodb.com/manual/reference/mongodb-extended-json
       var data = BSON.EJSON.stringify({
         'name': name,
-        'bench': bench,
-        'squat': squat,
-        'ohp': ohp,
+        'lift1': lift1,
+        'lift2': lift2,
+        'lift3': lift3,
         'lastUpdateTime': updateTime
       })
 

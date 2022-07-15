@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Kittens</title>
+  <title>Record Data</title>
   <style type="text/css">
     table, th, td {
       border: 1px solid black;
@@ -18,37 +18,25 @@
   <script src="https://unpkg.com/bson@4.4.0/dist/bson.browser.umd.js"></script>
 </head>
 <body>
-<h1>#(name) 🐱</h1>
+<h1>Entry: #(name)</h1>
 <table>
 <tr>
   <th>Bench</th>
-  <td>#(bench)</td>
+  <td>#(lift1)</td>
 </tr>
 <tr>
   <th>Squat</th>
-  <td>#(squat)
+  <td>#(lift2)
+  </td>
+</tr>
+<tr>
+  <th>Overhead Press</th>
+  <td>#(lift3)
   </td>
 </tr>
 </table>
-<br><br>
-<h2>Edit</h2>
-<label for="favoriteFood">New Favorite Food</label>
-<select id="favoriteFood" name="favoriteFood">
-  <option value="" selected disabled hidden>Select</option>
-  <option value="salmon">salmon</option>
-  <option value="turkey">turkey</option>
-  <option value="chicken">chicken</option>
-  <option value="tuna">tuna</option>
-  <option value="beef">beef</option>
-</select>
-</div>
-<div>
-<button id="save-btn">Save</button>
-<br>
-<br>
-</div>
 <br><br><br>
-<button id="delete-btn">Delete kitten</button>
+<button id="delete-btn">Delete entry</button>
 <br>
 <br>
 <a href="/">Home</a>
@@ -59,7 +47,7 @@ $(document).ready(() => {
   $("\#delete-btn").click(() => {
     $.ajax({
         type:'DELETE',
-        url:'/rest/kittens/#(name)',
+        url:'/rest/records/#(name)',
         success: () => {
           window.location.href = '/';
         },
@@ -75,7 +63,7 @@ $(document).ready(() => {
     $.ajax({
         type:'PATCH',
         contentType : 'application/json',
-        url:'/rest/kittens/#(name)',
+        url:'/rest/records/#(name)',
         // Serialize request data to extended JSON. We use extended JSON
         // both here, and for serializing/deserializing request data on
         // the backend, in order to ensure all MongoDB type information
@@ -88,7 +76,7 @@ $(document).ready(() => {
           }
         ),
         success: () => {
-          window.location.href = '/kittens/#(name)';
+          window.location.href = '/records/#(name)';
         },
         error: (req, status, message) => {
           alert("Error: " + message);

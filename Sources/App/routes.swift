@@ -3,18 +3,22 @@ import Vapor
 
 /// Adds a collection of web routes to the application.
 func webRoutes(_ app: Application) throws {
-    /// Handles a request to load the main index page containing a list of kittens.
+    /// Handles a request to load the main index page containing a list of records.
     app.get { req async throws -> View in
-        let kittens = try await req.findKittens()
-        // Return the corresponding Leaf view, providing the list of kittens as context.
-        return try await req.view.render("index.leaf", ["kittens": kittens])
+        let records = try await req.findRecords()
+        // Return the corresponding Leaf view, providing the list of records as context.
+        return try await req.view.render("index.leaf", ["records": records])
     }
 
-    /// Handles a request to load a page with info about a particular kitten.
-    app.get("kittens", ":name") { req async throws -> View in
-        let kitten = try await req.findKitten()
-        // Return the corresponding Leaf view, providing the kitten as context.
-        return try await req.view.render("kitten.leaf", kitten)
+    /// Handles a request to load a page with info about a particular record.
+    app.get("records", ":name") { req async throws -> View in
+        let record = try await req.findRecord()
+        // Return the corresponding Leaf view, providing the record as context.
+        return try await req.view.render("record.leaf", record)
+    }
+    
+    app.get("hello") { req -> String in
+        return "hello world!"
     }
 }
 
@@ -22,35 +26,35 @@ func webRoutes(_ app: Application) throws {
 func restAPIRoutes(_ app: Application) throws {
     let rest = app.grouped("rest")
 
-    /// Handles a request to load the list of kittens.
-    rest.get { req async throws -> [Kitten] in
-        try await req.findKittens()
+    /// Handles a request to load the list of records.
+    rest.get { req async throws -> [GymRecord] in
+        try await req.findRecords()
     }
 
-    /// Handles a request to add a new kitten.
+    /// Handles a request to add a new record.
     rest.post { req async throws -> Response in
         print("here")
-        return try await req.addKitten()
+        return try await req.addRecord()
     }
 
-    /// Handles a request to load info about a particular kitten.
-    rest.get("kittens", ":name") { req async throws -> Kitten in
-        try await req.findKitten()
+    /// Handles a request to load info about a particular record.
+    rest.get("records", ":name") { req async throws -> GymRecord in
+        try await req.findRecord()
     }
 
-    rest.delete("kittens", ":name") { req async throws -> Response in
-        try await req.deleteKitten()
+    rest.delete("records", ":name") { req async throws -> Response in
+        try await req.deleteRecord()
     }
 
-    rest.patch("kittens", ":name") { req async throws -> Response in
-        try await req.updateKitten()
-    }
+//    rest.patch("records", ":name") { req async throws -> Response in
+//        try await req.updateRecord()
+//    }
 }
 
 extension Request {
     /// Convenience extension for obtaining a collection.
-    var kittenCollection: MongoCollection<Kitten> {
-        self.application.mongoDB.client.db("personal").collection("gymRecorder", withType: Kitten.self)
+    var recordCollection: MongoCollection<GymRecord> {
+        application.mongoDB.client.db("personal").collection("gymRecorder", withType: GymRecord.self)
     }
 
     /// Constructs a document using the name from this request which can be used a filter for MongoDB
@@ -58,79 +62,94 @@ extension Request {
     func getNameFilter() throws -> BSONDocument {
         // We only call this method from request handlers that have name parameters so the value
         // will always be available.
-        guard let name = self.parameters.get("name") else {
+        guard let name = parameters.get("name") else {
             throw Abort(.internalServerError, reason: "Request unexpectedly missing name parameter")
         }
         return ["name": .string(name)]
     }
 
-    func findKittens() async throws -> [Kitten] {
+    func findRecords() async throws -> [GymRecord] {
         do {
-            return try await self.kittenCollection.find().toArray()
+            return try await recordCollection.find().toArray()
         } catch {
-            throw Abort(.internalServerError, reason: "Failed to load kittens: \(error)")
+            throw Abort(.internalServerError, reason: "Failed to load records: \(error)")
         }
     }
 
-    func findKitten() async throws -> Kitten {
-        let nameFilter = try self.getNameFilter()
-        guard let kitten = try await self.kittenCollection.findOne(nameFilter) else {
-            throw Abort(.notFound, reason: "No kitten with matching name")
+    func findRecord() async throws -> GymRecord {
+        let nameFilter = try getNameFilter()
+        guard let record = try await recordCollection.findOne(nameFilter) else {
+            throw Abort(.notFound, reason: "No record with matching name")
         }
-        return kitten
+        return record
+    }
+    
+    func onlySpaces(string: String) -> Bool {
+        for char in string {
+            if char != " " {
+                return false
+            }
+        }
+        return true
     }
 
-    func addKitten() async throws -> Response {
-        let newKitten = try self.content.decode(Kitten.self)
+    func addRecord() async throws -> Response {
+        var newRecord = try content.decode(GymRecord.self)
+        if newRecord.name == "" || onlySpaces(string: newRecord.name) {
+            let currCount = try await recordCollection.estimatedDocumentCount()
+            let nameStr = String(currCount + 1)
+            newRecord.setName(name: "Entry " + nameStr)
+            print("potato man")
+        }
         do {
-            try await self.kittenCollection.insertOne(newKitten)
+            try await recordCollection.insertOne(newRecord)
             return Response(status: .created)
         } catch {
             // Give a more helpful error message in case of a duplicate key error.
             if let err = error as? MongoError.WriteError, err.writeFailure?.code == 11000 {
-                throw Abort(.conflict, reason: "A kitten with the name \(newKitten.name) already exists!")
+                throw Abort(.conflict, reason: "A record with the name \(newRecord.name) already exists!")
             }
-            throw Abort(.internalServerError, reason: "Failed to save new kitten: \(error)")
+            throw Abort(.internalServerError, reason: "Failed to save new record: \(error)")
         }
     }
 
-    func deleteKitten() async throws -> Response {
-        let nameFilter = try self.getNameFilter()
+    func deleteRecord() async throws -> Response {
+        let nameFilter = try getNameFilter()
         do {
             // since we aren't using an unacknowledged write concern we can expect deleteOne to return a non-nil result.
-            guard let result = try await self.kittenCollection.deleteOne(nameFilter) else {
+            guard let result = try await recordCollection.deleteOne(nameFilter) else {
                 throw Abort(.internalServerError, reason: "Unexpectedly nil response from database")
             }
             guard result.deletedCount == 1 else {
-                throw Abort(.notFound, reason: "No kitten with matching name")
+                throw Abort(.notFound, reason: "No record with matching name")
             }
             return Response(status: .ok)
         } catch {
-            throw Abort(.internalServerError, reason: "Failed to delete kitten: \(error)")
+            throw Abort(.internalServerError, reason: "Failed to delete record: \(error)")
         }
     }
 
-    func updateKitten() async throws -> Response {
-        let nameFilter = try self.getNameFilter()
-        // Parse the update data from the request.
-        let update = try self.content.decode(KittenUpdate.self)
-        /// Create a document using MongoDB update syntax that specifies we want to set a field.
-        let updateDocument: BSONDocument = ["$set": .document(try BSONEncoder().encode(update))]
-
-        do {
-            // since we aren't using an unacknowledged write concern we can expect updateOne to return a non-nil result.
-            guard let result = try await self.kittenCollection.updateOne(
-                filter: nameFilter,
-                update: updateDocument
-            ) else {
-                throw Abort(.internalServerError, reason: "Unexpectedly nil response from database")
-            }
-            guard result.matchedCount == 1 else {
-                throw Abort(.notFound, reason: "No kitten with matching name")
-            }
-            return Response(status: .ok)
-        } catch {
-            throw Abort(.internalServerError, reason: "Failed to update kitten: \(error)")
-        }
-    }
+//    func updateRecord() async throws -> Response {
+//        let nameFilter = try getNameFilter()
+//        // Parse the update data from the request.
+//        let update = try content.decode(RecordUpdate.self)
+//        /// Create a document using MongoDB update syntax that specifies we want to set a field.
+//        let updateDocument: BSONDocument = ["$set": .document(try BSONEncoder().encode(update))]
+//
+//        do {
+//            // since we aren't using an unacknowledged write concern we can expect updateOne to return a non-nil result.
+//            guard let result = try await recordCollection.updateOne(
+//                filter: nameFilter,
+//                update: updateDocument
+//            ) else {
+//                throw Abort(.internalServerError, reason: "Unexpectedly nil response from database")
+//            }
+//            guard result.matchedCount == 1 else {
+//                throw Abort(.notFound, reason: "No record with matching name")
+//            }
+//            return Response(status: .ok)
+//        } catch {
+//            throw Abort(.internalServerError, reason: "Failed to update record: \(error)")
+//        }
+//    }
 }
