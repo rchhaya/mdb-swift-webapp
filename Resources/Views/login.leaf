@@ -1,0 +1,61 @@
+<!DOCTYPE html>    
+<html>    
+<head>    
+    <title>Login Form</title>    
+    <link rel="stylesheet" type="text/css" href="/css/style.css">    
+</head>    
+<body>    
+    <h2>Login Page</h2><br>    
+    <div class="login">    
+    <form id="login" method="get" action="login.php">    
+        <label><b>User Name     
+        </b>    
+        </label>    
+        <input type="text" name="Uname" id="Uname" placeholder="Username">    
+        <br><br>    
+        <label><b>Password     
+        </b>    
+        </label>    
+        <input type="Password" name="Pass" id="Pass" placeholder="Password">    
+        <br><br>    
+        <input type="button" name="log" id="log" value="Log In Here">       
+        <br><br>    
+        <input type="checkbox" id="check">    
+        <span>Remember me</span>    
+        <br><br>    
+        Forgot <a href="#">Password</a>    
+    </form>   
+    <script type="text/javascript">
+  $(document).ready(() => {
+    $("\#add-btn").click(() => {
+      var uname = $("\#Uname").val();
+      var pass = $("\#Pass").val();
+      var updateTime = new Date();
+      // Serialize request data to extended JSON. We use extended JSON
+      // both here, and for serializing/deserializing request data on
+      // the backend, in order to ensure all MongoDB type information
+      // is preserved.
+      // See: https://docs.mongodb.com/manual/reference/mongodb-extended-json
+      var data = BSON.EJSON.stringify({
+        'uname': uname,
+        'pass': pass
+      })
+
+      $.ajax({
+          type:'POST',
+          contentType : 'application/json',
+          url:'/login',
+          data: data,
+          success: () => {
+            window.location.href = '/';
+          },
+          error: (req, status, message) => {
+            alert("Error: " + message);
+          }
+      });
+    });
+  });
+      </script>
+</div>    
+</body>    
+</html>  

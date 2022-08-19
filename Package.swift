@@ -1,4 +1,4 @@
-// swift-tools-version:5.5
+//swift-tools-version:5.5.0
 import PackageDescription
 
 let package = Package(
@@ -7,9 +7,13 @@ let package = Package(
         .macOS(.v12),
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor", .upToNextMajor(from: "4.50.0")),
-        .package(url: "https://github.com/vapor/leaf", .upToNextMajor(from: "4.0.0")),
-        .package(url: "https://github.com/mongodb/mongodb-vapor", .exact("1.1.0-alpha.2")),
+        .package(url: "https://github.com/vapor/vapor", branch: "main"),
+        .package(url: "https://github.com/vapor/leaf", branch: "main"),
+        .package(url: "https://github.com/mongodb/mongodb-vapor", branch: "main"),
+        //.package(url: "https://github.com/vapor/vapor", branch: "main"),
+        //.package(url: "https://github.com/vapor/vapor", .upToNextMajor(from: "4.50.0")),
+        //.package(url: "https://github.com/vapor/leaf", .upToNextMajor(from: "4.0.0")),
+        //.package(url: "https://github.com/mongodb/mongodb-vapor", .exact("1.1.0-alpha.2")),
     ],
     targets: [
         .target(

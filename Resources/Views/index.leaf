@@ -21,7 +21,7 @@
   
   <h1>Gym Records 🏋️‍♂️</h1>
 <br>
-<h2>Add a new gym record! (Theoretical 1RMs) </h2>
+<h2>Add a new gym record!</h2>
 <form onsubmit="return false;">
     <div>
     <label for="name">Name</label>
@@ -45,6 +45,9 @@
 </form>
 <br>
 <br>
+<h3 style="text-align:center;">
+<iframe style="background: #F1F5F4;border: none;border-radius: 2px;display: box-shadow: 0 2px 10px 0 rgba(70, 76, 79, .2);" width="640" height="520" src="https://charts.mongodb.com/charts-nodejs-mongo-demo-uubop/embed/dashboards?id=62aaa308-2bec-455b-85b3-b2235cb66439&theme=light&autoRefresh=true&maxDataAge=30&showTitleAndDesc=true&scalingWidth=scale&scalingHeight=scale"></iframe>
+</h3>
 <table>
 <tr>
     <th>Name</th>

@@ -20,6 +20,13 @@ func webRoutes(_ app: Application) throws {
     app.get("hello") { req -> String in
         return "hello world!"
     }
+    
+    app.get("login") { req async throws -> View in
+        return try await req.view.render("login.leaf")
+    }
+    app.post("login") { req -> String in
+        return("postal service")
+    }
 }
 
 // Adds a collection of rest API routes to the application.
